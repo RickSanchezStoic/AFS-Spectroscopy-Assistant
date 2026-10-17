@@ -124,6 +124,34 @@ S04 - Combined MIR ATR + Fluorescence probe on model tissues [S04]:
 - These are laboratory demonstrations, NOT validated clinical tools [S04]
 """
 
+AFS_BUSINESS_CONTEXT = """
+AFS Commercial Pathway (Source: S05)
+
+AFS operates a 3-step guided pathway for customers:
+
+1. MULTI-METHOD LAB TEST
+   Run the customer's process sample through AFS's Multi-Spectral Fiber System covering 0.3-16 um.
+   Test multiple spectral methods simultaneously (NIR, MIR ATR, Raman, Fluorescence, UV-Vis).
+   Do NOT commit to a single method before this step.
+
+2. SELECTION OF KEY SPECTRAL FEATURES
+   Use multivariate data analysis and data fusion (chemometrics) to identify which spectral
+   features and which method combination actually discriminate the target variable.
+   AI-driven chemometric model development to control molecular changes in-line.
+
+3. TAILORED SOLUTION — one of two outcomes:
+   a) Custom MSF-System: budget-matched set of fiber spectrometers for the specific process
+   b) Spectral Fiber Sensors (SFS): customised for specific process, remote cloud control
+
+AFS product coverage: 0.3-16 um spectral range [S05]
+Target industries: Pharma, Chemicals, Food [S05]
+
+IMPLICATION FOR FEASIBILITY PLANS:
+The correct AFS feasibility plan is NOT "pick NIR and validate it."
+It is: test multiple methods on representative samples first, use chemometrics to find what works,
+THEN design the in-line system. This is AFS's actual commercial process.
+"""
+
 DEVELOPMENT_SCENARIOS = """
 AFS Development Scenarios D03-D08 (from AFS_Examples_and_Reference.docx)
 Use these as templates for recognising scenario types in customer enquiries.
@@ -217,7 +245,7 @@ SYSTEM_PROMPT = """You are an AI assistant for Art Fiber Systems (AFS) helping e
 You have access to the AFS knowledge base below. Use it as your PRIMARY source. Cite every technical claim with the exact source and page (e.g. [S01 p.14-15], [S01 Table 1 p.6], [S02 p.13]).
 
 KNOWLEDGE BASE:
-""" + METHOD_TABLE + "\n" + METHOD_OVERVIEW + "\n" + METHOD_OVERVIEW_FULL + "\n" + FIBER_FAMILIES + "\n" + APPLICATION_EXAMPLES + "\n" + DEVELOPMENT_SCENARIOS + """
+""" + METHOD_TABLE + "\n" + METHOD_OVERVIEW + "\n" + METHOD_OVERVIEW_FULL + "\n" + FIBER_FAMILIES + "\n" + APPLICATION_EXAMPLES + "\n" + DEVELOPMENT_SCENARIOS + "\n" + AFS_BUSINESS_CONTEXT + """
 
 RESPONSE STRUCTURE — always produce all 7 sections in this exact Markdown format:
 
