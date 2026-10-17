@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AFS Spectroscopy Assistant</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #4f8ef7;
+    --accent2: #7c5cbf;
+    --text: #e8eaf0;
+    --text2: #8b92b8;
+    --green: #3dd68c;
+    --yellow: #f5c842;
+    --red: #e05c5c;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .logo-text h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
+  .logo-text p { font-size: 11px; color: var(--text2); margin-top: 1px; }
+  .badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 11px; color: var(--text2); }
+
+  .main { display: flex; flex: 1; overflow: hidden; }
+
+  .sidebar {
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .sidebar h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text2); margin-bottom: 4px; }
+  .scenario-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .scenario-btn:hover { border-color: var(--accent); background: #1e2235; }
+  .scenario-id { font-weight: 700; color: var(--accent); display: block; font-size: 11px; margin-bottom: 3px; }
+
+  .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .message { display: flex; gap: 12px; max-width: 900px; width: 100%; }
+  .message.user { align-self: flex-end; flex-direction: row-reverse; }
+  .message.assistant { align-self: flex-start; }
+
+  .avatar {
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; flex-shrink: 0;
+  }
+  .user .avatar { background: linear-gradient(135deg, #3a5fc8, #5a3fc8); }
+  .assistant .avatar { background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+
+  .bubble {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    max-width: 820px;
+    line-height: 1.65;
+    font-size: 14px;
+  }
+  .user .bubble { background: var(--surface2); }
+
+  /* Markdown rendering */
+  .bubble h2 { font-size: 14px; font-weight: 700; color: var(--accent); margin: 18px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+  .bubble h2:first-child { margin-top: 0; }
+  .bubble h3 { font-size: 13px; font-weight: 600; color: var(--yellow); margin: 12px 0 6px; }
+  .bubble ul, .bubble ol { padding-left: 20px; margin: 6px 0; }
+  .bubble li { margin-bottom: 4px; }
+  .bubble p { margin: 6px 0; }
+  .bubble strong { color: var(--text); }
+  .bubble em { color: var(--text2); font-style: italic; }
+  .bubble code { background: var(--surface2); padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: 'Consolas', monospace; color: var(--green); }
+  .bubble pre { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 10px; overflow-x: auto; margin: 8px 0; }
+  .cite { color: var(--accent); font-size: 12px; font-weight: 600; }
+
+  .typing { color: var(--text2); font-style: italic; }
+  .cursor { display: inline-block; width: 8px; height: 15px; background: var(--accent); animation: blink 1s infinite; vertical-align: middle; margin-left: 2px; border-radius: 2px; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .welcome {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text2);
+  }
+  .welcome h2 { font-size: 22px; color: var(--text); margin-bottom: 10px; }
+  .welcome p { font-size: 14px; max-width: 500px; margin: 0 auto 20px; line-height: 1.6; }
+  .feature-grid { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+  .feature { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; font-size: 12px; }
+  .feature-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+
+  .input-area {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    flex-shrink: 0;
+  }
+  .input-row { display: flex; gap: 10px; align-items: flex-end; }
+  textarea {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+    min-height: 52px;
+    max-height: 200px;
+    outline: none;
+    transition: border-color 0.15s;
+    line-height: 1.5;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--text2); }
+  .send-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0 20px;
+    height: 52px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+  }
+  .send-btn:hover:not(:disabled) { opacity: 0.85; }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .input-hint { font-size: 11px; color: var(--text2); margin-top: 8px; }
+
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🔬</div>
+    <div class="logo-text">
+      <h1>AFS Spectroscopy Assistant</h1>
+      <p>Art Fiber Systems · National AI Hackathon 2026</p>
+    </div>
+  </div>
+  <div class="badge">⚡ Powered by Claude</div>
+</header>
+
+<div class="main">
+  <div class="sidebar">
+    <div>
+      <h3>Example Scenarios</h3>
+    </div>
+    <button class="scenario-btn" onclick="loadScenario('H01')">
+      <span class="scenario-id">H01</span>
+      NIR pilot calibration reuse after API change
+    </button>
+    <button class="scenario-btn" onclick="loadScenario('H02')">
+      <span class="scenario-id">H02</span>
+      Dairy: whey stream + opaque milk concentrate
+    </button>
+    <button class="scenario-btn" onclick="loadScenario('H03')">
+      <span class="scenario-id">H03</span>
+      Fluorescence for glucose &amp; viable biomass
+    </button>
+    <button class="scenario-btn" onclick="loadScenario('H04')">
+      <span class="scenario-id">H04</span>
+      MIR ATR petroleum — reuse silica fiber?
+    </button>
+    <button class="scenario-btn" onclick="loadScenario('H05')">
+      <span class="scenario-id">H05</span>
+      Off-spec liquid, unknown contaminant
+    </button>
+    <button class="scenario-btn" onclick="loadScenario('H06')">
+      <span class="scenario-id">H06</span>
+      LED kidney study → live surgical use?
+    </button>
+    <hr style="border-color: var(--border); margin: 4px 0;">
+    <button class="reset-btn" onclick="resetChat()">🗑 New conversation</button>
+  </div>
+
+  <div class="chat-area">
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <h2>AFS In-line Spectroscopy Assistant</h2>
+        <p>Describe your process monitoring challenge. I'll identify missing information, recommend spectroscopy approaches, and propose a first feasibility experiment — all grounded in AFS technical materials.</p>
+        <div class="feature-grid">
+          <div class="feature"><span class="feature-icon">📋</span>Requirements analysis</div>
+          <div class="feature"><span class="feature-icon">❓</span>Clarification questions</div>
+          <div class="feature"><span class="feature-icon">🔬</span>Method recommendation</div>
+          <div class="feature"><span class="feature-icon">📎</span>Source citations</div>
+          <div class="feature"><span class="feature-icon">🧪</span>Feasibility plan</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <textarea id="userInput" placeholder="Describe your process monitoring challenge... (e.g. 'We need to monitor moisture in a petroleum stream remotely')" rows="2" onkeydown="handleKey(event)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">↑</button>
+      </div>
+      <div class="input-hint">Enter to send · Shift+Enter for new line · Use sidebar to load evaluation scenarios</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SESSION_ID = 'session_' + Date.now();
+let isStreaming = false;
+
+const SCENARIOS = {
+  H01: `Our existing NIR pilot follows API concentration in one powder formulation at the tablet press feed frame. We are introducing a different API and excipient blend and would like to reuse the calibration. A colleague suggests adding Raman so that the old calibration will remain valid. What should our first technical assessment and experiment be?`,
+  H02: `Our dairy process handles both a relatively clear whey stream and an opaque milk concentrate. We want a pilot for composition monitoring, using laboratory protein and fat results where those variables are relevant. We can compare different measurement interfaces before choosing the installation. What first measurement concepts and comparison experiment would make sense for these two streams?`,
+  H03: `We already have a fluorescence spectrometer and would like to use it to report glucose concentration and viable biomass directly during fermentation. Our only justification is that fluorescence can be very sensitive. We have not identified a fluorescent target, marker or reference relationship. What should the assistant tell us?`,
+  H04: `We want to investigate water content in a petroleum line using MIR ATR. The analyzer would be in another building. We already have a silica fiber cable from a visible or NIR measurement setup and would like to reuse it. The link length, routing and operating conditions have not yet been supplied. Can the assistant approve this concept?`,
+  H05: `We have a liquid process that occasionally goes off specification. We suspect contamination, but we cannot yet name the contaminant or the affected quality variable. We would like you to recommend the best spectroscopy method and exact sensor configuration immediately. What information and first experiment should come before that decision?`,
+  H06: `We read the supplied LED NIR kidney study and want to use the same concept to guide tumor boundary decisions during live surgery. Can we quote its findings as proof that the proposed sensor is ready for that use? We have no new in vivo data and no validation on our own setup. What assessment and next feasibility steps are appropriate?`
+};
+
+function loadScenario(id) {
+  document.getElementById('userInput').value = SCENARIOS[id];
+  document.getElementById('userInput').focus();
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+}
+
+document.getElementById('userInput').addEventListener('input', function() { autoResize(this); });
+
+function renderMarkdown(text) {
+  // Citations: [S01 p.14-15] → styled span
+  text = text.replace(/\[([A-Z0-9]+ [^\]]+)\]/g, '<span class="cite">[$1]</span>');
+  // Headers
+  text = text.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  text = text.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  // Bold
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  // Code
+  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Lists
+  text = text.replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>');
+  text = text.replace(/^- (.+)$/gm, '<li>$1</li>');
+  // Wrap consecutive <li> items
+  text = text.replace(/(<li>.*<\/li>\n?)+/g, m => '<ul>' + m + '</ul>');
+  // Paragraphs
+  text = text.split('\n\n').map(p => {
+    if (p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<ol')) return p;
+    if (p.trim() === '') return '';
+    return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
+  }).join('');
+  return text;
+}
+
+function addMessage(role, content, streaming = false) {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  avatar.textContent = role === 'user' ? 'U' : 'A';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+
+  if (streaming) {
+    bubble.innerHTML = '<span class="cursor"></span>';
+  } else {
+    bubble.innerHTML = renderMarkdown(content);
+  }
+
+  div.appendChild(avatar);
+  div.appendChild(bubble);
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+
+  return bubble;
+}
+
+async function sendMessage() {
+  if (isStreaming) return;
+  const input = document.getElementById('userInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('sendBtn').disabled = true;
+  isStreaming = true;
+
+  addMessage('user', msg);
+
+  const bubble = addMessage('assistant', '', true);
+  let accumulated = '';
+
+  try {
+    const resp = await fetch('/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_id: SESSION_ID, message: msg})
+    });
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, {stream: true});
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = JSON.parse(line.slice(6));
+          if (data.text) {
+            accumulated += data.text;
+            bubble.innerHTML = renderMarkdown(accumulated) + '<span class="cursor"></span>';
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+          }
+          if (data.done) {
+            bubble.innerHTML = renderMarkdown(accumulated);
+          }
+        }
+      }
+    }
+  } catch (e) {
+    bubble.innerHTML = '<span style="color:var(--red)">Error: ' + e.message + '</span>';
+  }
+
+  isStreaming = false;
+  document.getElementById('sendBtn').disabled = false;
+  input.focus();
+}
+
+async function resetChat() {
+  await fetch('/reset', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({session_id: SESSION_ID})
+  });
+  document.getElementById('messages').innerHTML = `
+    <div class="welcome" id="welcome">
+      <h2>AFS In-line Spectroscopy Assistant</h2>
+      <p>Describe your process monitoring challenge. I'll identify missing information, recommend spectroscopy approaches, and propose a first feasibility experiment — all grounded in AFS technical materials.</p>
+      <div class="feature-grid">
+        <div class="feature"><span class="feature-icon">📋</span>Requirements analysis</div>
+        <div class="feature"><span class="feature-icon">❓</span>Clarification questions</div>
+        <div class="feature"><span class="feature-icon">🔬</span>Method recommendation</div>
+        <div class="feature"><span class="feature-icon">📎</span>Source citations</div>
+        <div class="feature"><span class="feature-icon">🧪</span>Feasibility plan</div>
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>
