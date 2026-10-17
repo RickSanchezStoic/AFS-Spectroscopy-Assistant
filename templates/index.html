@@ -334,12 +334,17 @@ function autoResize(el) {
 document.getElementById('userInput').addEventListener('input', function() { autoResize(this); });
 
 function renderMarkdown(text) {
-  // Style AFS citations before passing to marked
-  text = text.replace(/\[([A-Z0-9]+[\s\w\.\-]+(?:p\.[\d\-]+|Table[\s\d]+)?)\]/g, (m, inner) => {
-    if (/^S0\d|Table/.test(inner)) return `<span class="cite">[${inner}]</span>`;
+  // Run marked first, then re-style citations in the resulting HTML
+  let html = marked.parse(text);
+  // Match both [S01 p.x] and 【S01 p.x】 bracket styles
+  html = html.replace(/[\[【]([^\]】]{3,60})[\]】]/g, (m, inner) => {
+    const clean = inner.replace(/[​‌‍﻿]/g, '').replace(/[‐-―]/g, '-').trim();
+    if (/^S0\d/.test(clean) || /^Table/.test(clean) || /^D0\d/.test(clean)) {
+      return `<span class="cite">[${clean}]</span>`;
+    }
     return m;
   });
-  return marked.parse(text);
+  return html;
 }
 
 function addCopyBtn(bubble, rawText) {
