@@ -106,10 +106,22 @@ PHARMACEUTICAL / EXTRUSION (D07)
 - High temperature and potential fouling are key clarification questions before probe selection
 
 MEDICAL / RESEARCH (Proof of Concept ONLY)
-- LED-based NIR sensor for kidney tumour differentiation: in vitro study, 14 samples, 7 patients [S03] — NOT validated for clinical/surgical use; NOT applicable to process control
-- MIR ATR + fluorescence combined probe on model tissues (chicken muscle/fat/liver): laboratory classification study [S04]; heterogeneous samples may require same-location measurement; comparison experiment needed before interpreting combined results
-- D08 scenario: comparing MIR ATR and fluorescence on heterogeneous model tissues — sequential measurements may NOT sample the same location; this is an important limitation to state
-- These are research demonstrations, NOT validated clinical tools
+S03 - LED NIR kidney tumour sensor [S03]:
+- Compact sensor: 4 LEDs at NIR wavelengths + 1 photodiode (NOT a full spectrometer)
+- 14 in vitro samples from 7 patients; two sensor prototypes (Series A and B) tested
+- PCA and PLS-DA confirmed general applicability to tumour/healthy tissue discrimination
+- Paper's own conclusion: "proof-of-concept", "first estimate of real-life applicability", further studies needed
+- Key limitation: HIGH measurement variance in cancer tissue samples; false negatives unacceptable in oncology
+- NOT validated for clinical/surgical use; NOT applicable to process control [S03]
+
+S04 - Combined MIR ATR + Fluorescence probe on model tissues [S04]:
+- Probe design: ZrO2 ATR crystal (truncated cone), CIR fibers for MIR, silica fibers for fluorescence — single probe head
+- Samples: chicken breast, fat, liver — 3 samples per tissue type, 5 measurement points each (45x118 IR + 45x705 fluorescence matrices)
+- IR alone: better for fat discrimination (ester carbonyl C=O peak at ~1740 cm-1)
+- Fluorescence alone: better for liver discrimination (porphyrin peak at 613 nm)
+- Combined: cleanly separates all three tissue types — demonstrates synergistic gain [S04 p.4]
+- Key limitation stated explicitly: sequential measurements from two separate probes CANNOT guarantee same measurement spot in heterogeneous tissue — combined single probe solves this [S04 p.2]
+- These are laboratory demonstrations, NOT validated clinical tools [S04]
 """
 
 DEVELOPMENT_SCENARIOS = """
