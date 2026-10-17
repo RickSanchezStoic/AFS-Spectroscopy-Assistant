@@ -140,18 +140,39 @@ FIBER_FAMILIES = """
 Fiber Families (Source: S02 p.6 - transcribed for reference; always check original figure)
 Unit reminder: wavelength in µm = 10 000 / wavenumber in cm-1 (4000 cm-1 = 2.5 µm)
 
-Fiber Type | Approximate Transmission Range
------------|---------------------------------
-Standard and Al/Cu-coated UV-Vis silica fibers | 190-1200 nm (UV to near-NIR only)
-Standard and Al/Cu-coated Vis-NIR silica fibers | 350-2400 nm (visible to NIR)
-Chalcogenide As-S IR fibers (CIR) | 1.1-6.5 µm (covers MIR range)
-Polycrystalline infrared fibers (PIR) | 3-17 µm (deep MIR)
-Hollow glass waveguides (HWG) | 2-18 µm (deep MIR)
-Indium fluoride fibers | 0.3-5.5 µm
-Zirconium fluoride fibers | 0.3-4.5 µm
+Fiber Type | Approximate Transmission Range | Notes
+-----------|---------------------------------|------
+Standard and Al/Cu-coated UV-Vis silica fibers | 190-1200 nm (UV to near-NIR only) | Low-OH silica; robust 100-300m cables for industrial process control [S02 p.7]
+Standard and Al/Cu-coated Vis-NIR silica fibers | 350-2400 nm (visible to NIR) | Al/Cu-coated: high temp resistance, hermetically sealed, polymer-fluorescence-free for Raman/fluorescence [S02 p.7]
+Chalcogenide As-S IR fibers (CIR) | 1.1-6.5 µm (covers MIR range) | For MIR ATR applications [S02 p.9]
+Polycrystalline infrared fibers (PIR / AgHal) | 3-17 µm (deep MIR) | Very flexible, non-brittle, non-toxic; HIGH NA>0.3 gives better coupling with FTIR spectrometers than HWG; preferred for ATR probes [S02 p.9, 10]
+Hollow glass waveguides (HWG) | 2-18 µm (deep MIR) | Low NA>0.1 causes poor coupling with FTIR; PIR fibers preferred for ATR probe applications [S02 p.10]
+Indium fluoride fibers | 0.3-5.5 µm | [S02 p.6]
+Zirconium fluoride fibers | 0.3-4.5 µm | [S02 p.6]
 
-KEY RULE: Silica fiber (UV-Vis or Vis-NIR) stops at ~1200-2400 nm. MIR ATR requires chalcogenide (CIR),
-PIR, HWG, or fluoride fibers. A silica fiber cable CANNOT carry MIR ATR signals. [S02 p.6]
+KEY RULES [S02 p.6-10]:
+- Silica fiber (UV-Vis or Vis-NIR) stops at ~1200-2400 nm. Cannot carry MIR ATR signals.
+- MIR ATR requires CIR, PIR, HWG, or fluoride fibers.
+- PIR fibers are preferred over HWG for ATR probes with FTIR spectrometers (higher NA = better coupling).
+- PIR fiber transmission range 3-16 µm matches the molecular fingerprint region and black body radiation at 0-100 deg C [S02 p.8].
+- Al/Cu-coated silica cables: polymer-jacket-free = no fluorescence interference for Raman and fluorescence spectroscopy [S02 p.7].
+
+S02 p.7 key facts:
+- Robust 100-300m silica cables with low OH-content (<0.1 ppm OH) enable remote industrial process control
+- Al/Cu-coated fibers: high temperature resistance, increased durability, high strength, hermetically sealed
+
+S02 p.13 - Water in petroleum application:
+- ATR probe tip: ZrO2 (zirconia), diamond, etc., sealed in PEEK shaft, protected by PEEK tubing
+- Can be used in microwave furnaces
+- MIR ATR spectrum shows water peaks clearly distinguishable from 0.1% to 2.0% water content in oil
+- Water O-H stretching region (~3300-3600 cm-1) and combination band (~2300 cm-1) visible in oil matrix
+
+S02 p.14 - Polymer extrusion application:
+- NIR reflection AND MIR ATR both applied in-line for hot polymer extrusion
+- API control with PIR-fiber FTIR spectroscopy in pharma industry
+- Diamond cone ATR probe coupled to iC10 FTIR (MTAC) used to get spectra of API in hot polymer melt
+- NIR probe mounted at extruder barrel/die for feed-forward control (waste gate switch: good product vs waste)
+- Both NIR and MIR ATR are viable options for hot melt extrusion; MIR gives higher chemical selectivity
 """
 
 METHOD_OVERVIEW_FULL = """
