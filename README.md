@@ -1,5 +1,5 @@
 # AFS Spectroscopy Assistant
-**National AI Hackathon 2026 — Art Fiber Systems Challenge**
+**National AI Hackathon 2026 - Art Fiber Systems Challenge**
 *AI Assistant for In-line Spectroscopy Solution Design*
 
 ---
@@ -15,7 +15,7 @@ A chat assistant that helps AFS experts make a first technical assessment of cus
 5. States risks, assumptions, and uncertainty explicitly
 6. Proposes a concrete first feasibility experiment with a go/no-go basis
 
-Every technical claim cites the specific AFS source and page (e.g. `[S01 p.14–15]`).
+Every technical claim cites the specific AFS source and page (e.g. `[S01 p.14-15]`).
 
 ---
 
@@ -28,14 +28,13 @@ AFS_Assistant/
 │   └── afs_knowledge.py          # AFS knowledge base compiled from all materials
 ├── templates/
 │   └── index.html                # Single-page chat UI
-├── outputs/                      # Pre-generated H01–H06 evaluation answers
+├── outputs/                      # Pre-generated H01-H06 evaluation answers
 │   ├── H01.md
 │   ├── H02.md
 │   ├── H03.md
 │   ├── H04.md
 │   ├── H05.md
 │   └── H06.md
-├── generate_h_answers.py         # Script to regenerate H01–H06 via API
 └── requirements.txt
 ```
 
@@ -45,12 +44,12 @@ All supplied materials were read and compiled into `knowledge/afs_knowledge.py`:
 
 | Source | Content used |
 |--------|-------------|
-| `S01_Multispectral_Laboratory.pdf` | Methods overview (p.2–12), application cases (p.13–18) |
-| `S02_AFS_Process_Control_Slides.pdf` | Fiber transmission ranges (p.6–10), process applications (p.13–14) |
+| `S01_Multispectral_Laboratory.pdf` | Methods overview (p.2-12), application cases (p.13-18) |
+| `S02_AFS_Process_Control_Slides.pdf` | Fiber transmission ranges (p.6-10), process applications (p.13-14) |
 | `S03_LED_Kidney_Study_2017.pdf` | Proof-of-concept scope and limitations (in vitro, n=14) |
 | `S04_Combi_MIR_Fluorescence_2021.pdf` | Combined MIR ATR + fluorescence probe on model tissues |
-| `AFS_method_comparison_table.xlsx` | Method × technique × sensitivity × selectivity × cost table |
-| `AFS_Examples_and_Reference.docx` | Worked examples D01–D02, answer structure, good practice rules |
+| `AFS_method_comparison_table.xlsx` | Method x technique x sensitivity x selectivity x cost table |
+| `AFS_Examples_and_Reference.docx` | Worked examples D01-D02, answer structure, good practice rules |
 
 The knowledge base is injected as system context on every request. The model cites sources by ID and page for every technical claim.
 
@@ -78,18 +77,18 @@ Then open `http://localhost:5000`
 
 ---
 
-## Evaluation Scenarios (H01–H06)
+## Evaluation Scenarios (H01-H06)
 
 Pre-generated answers are in `outputs/`. Each answer follows the structured format required by the challenge brief and was produced by the assistant without manual editing.
 
 | ID | Scenario | Decision Status |
 |----|----------|----------------|
-| H01 | NIR calibration reuse after API/excipient change | Provisional assessment — key correction to stated premise |
-| H02 | Composition monitoring across two dairy streams | Provisional assessment — two separate measurement concepts |
-| H03 | Fluorescence for glucose and viable biomass | Insufficient information — no fluorescent target identified |
-| H04 | Silica fiber reuse for MIR ATR petroleum | Cannot approve — fundamental fiber incompatibility |
-| H05 | Off-specification liquid, unknown contaminant | Insufficient information — characterise problem before method |
-| H06 | LED kidney study cited as surgical readiness proof | Outside supported scope — proof-of-concept ≠ clinical validation |
+| H01 | NIR calibration reuse after API/excipient change | Provisional assessment - key correction to stated premise |
+| H02 | Composition monitoring across two dairy streams | Provisional assessment - two separate measurement concepts |
+| H03 | Fluorescence for glucose and viable biomass | Insufficient information - no fluorescent target identified |
+| H04 | Silica fiber reuse for MIR ATR petroleum | Cannot approve - fundamental fiber incompatibility |
+| H05 | Off-specification liquid, unknown contaminant | Insufficient information - characterise problem before method |
+| H06 | LED kidney study cited as surgical readiness proof | Outside supported scope - proof-of-concept not clinical validation |
 
 ---
 
