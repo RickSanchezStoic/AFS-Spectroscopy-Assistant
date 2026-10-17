@@ -58,7 +58,7 @@ The knowledge base is injected as system context on every request. The model cit
 
 ## Setup
 
-**Requirements:** Python 3.9+, an Anthropic API key
+**Requirements:** Python 3.9+, a [Groq API key](https://console.groq.com) (free tier)
 
 ```bash
 pip install -r requirements.txt
@@ -67,15 +67,14 @@ pip install -r requirements.txt
 **Run the app:**
 ```bash
 # Windows
-set ANTHROPIC_API_KEY=your_key_here
+set GROQ_API_KEY=your_key_here
+python app.py
+
+# macOS / Linux
+export GROQ_API_KEY=your_key_here
 python app.py
 ```
 Then open `http://localhost:5000`
-
-**Regenerate H01–H06 outputs:**
-```bash
-python generate_h_answers.py
-```
 
 ---
 
