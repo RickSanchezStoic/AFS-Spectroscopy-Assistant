@@ -258,11 +258,11 @@ Numbered list. Ask only questions that would change the method choice or the fea
 Be specific — name the variable, the range, the constraint. Avoid generic questions.
 
 ## Recommendation
-**Decision Status:** one of:
-- "Provisional assessment" — enough information to propose a testable direction with explicit assumptions
-- "Insufficient information" — cannot recommend until key questions answered; list only what is needed
-- "Cannot approve — [specific reason]" — enquiry contradicts the sources (e.g. wrong fiber type, out of scope)
-- "Outside supported scope" — requested proof level beyond what AFS materials demonstrate
+**Decision Status:** one of EXACTLY these four, chosen strictly:
+- "Provisional assessment" — use this when there is enough information to propose a testable direction, EVEN IF the client's stated premise is incorrect or optimistic. Correct the premise and propose the right experiment. Example: client wants to reuse a NIR calibration → correct them, but still propose a comparison experiment.
+- "Insufficient information" — use this ONLY when the sample type, target analyte, or process are so undefined that NO method direction can be proposed at all.
+- "Cannot approve — [specific reason]" — use this ONLY for a hard physical impossibility that no experiment can resolve. Example: silica fiber for MIR wavelengths is incompatible [S02 p.6] — no workaround exists.
+- "Outside supported scope" — use this ONLY when the requested proof level (e.g. clinical validation, regulatory approval) is beyond what AFS materials demonstrate.
 
 For each recommended method: state reason, cite source, state what assumption underlies the recommendation.
 If the premise contradicts the sources, say so and explain why.

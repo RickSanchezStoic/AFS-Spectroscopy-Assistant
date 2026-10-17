@@ -63,14 +63,13 @@ The knowledge base is injected as system context on every request. The model cit
 pip install -r requirements.txt
 ```
 
+**Set your API key** — create a `.env` file in the project root (already in `.gitignore`):
+```
+GROQ_API_KEY=your_key_here
+```
+
 **Run the app:**
 ```bash
-# Windows
-set GROQ_API_KEY=your_key_here
-python app.py
-
-# macOS / Linux
-export GROQ_API_KEY=your_key_here
 python app.py
 ```
 Then open `http://localhost:5000`

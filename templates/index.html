@@ -373,14 +373,18 @@ function extractStatusBadge(text) {
   const match = text.match(/\*\*Decision Status:\*\*\s*(.+)/i);
   if (!match) return null;
   const raw = match[1].trim();
+  // Truncate at em-dash or long qualifier sentences — keep just the label
+  const label = raw.split(/\s*[—–-]\s*/)[0].trim().replace(/\.$/, '');
   let cls = 'insufficient';
   let icon = '⚠️';
-  if (/provisional/i.test(raw)) { cls = 'provisional'; icon = '✅'; }
-  else if (/cannot approve/i.test(raw) || /outside supported/i.test(raw)) { cls = 'cannot'; icon = '🚫'; }
-  return `<div class="status-badge ${cls}">${icon} ${raw}</div>`;
+  if (/provisional/i.test(label)) { cls = 'provisional'; icon = '✅'; }
+  else if (/cannot approve/i.test(label) || /outside supported/i.test(label)) { cls = 'cannot'; icon = '🚫'; }
+  return `<div class="status-badge ${cls}">${icon} ${label}</div>`;
 }
 
-async function fetchSuggestions(userMsg, assistantResponse, bubble) {
+let bubbleCounter = 0;
+
+async function fetchSuggestions(userMsg, assistantResponse, bubbleId) {
   try {
     const resp = await fetch('/suggest', {
       method: 'POST',
@@ -389,6 +393,9 @@ async function fetchSuggestions(userMsg, assistantResponse, bubble) {
     });
     const data = await resp.json();
     if (!data.suggestions || !data.suggestions.length) return;
+    // Re-find bubble by id — the bubble reference may be stale after innerHTML rewrites
+    const bubble = document.querySelector(`[data-bubble-id="${bubbleId}"]`);
+    if (!bubble) return;
     const container = document.createElement('div');
     container.className = 'suggestions';
     data.suggestions.forEach(q => {
@@ -433,7 +440,7 @@ function addCopyBtn(bubble, rawText) {
   bubble.appendChild(btn);
 }
 
-function addMessage(role, content, streaming = false, turnIdx = null) {
+function addMessage(role, content, streaming = false, turnIdx = null, bubbleId = null) {
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.remove();
 
@@ -448,6 +455,8 @@ function addMessage(role, content, streaming = false, turnIdx = null) {
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
+
+  if (bubbleId) bubble.dataset.bubbleId = bubbleId;
 
   if (streaming) {
     bubble.innerHTML = '<span class="cursor"></span>';
@@ -514,7 +523,8 @@ async function sendMessage() {
   const currentTurn = messageIndex++;
   addMessage('user', msg, false, currentTurn);
 
-  const bubble = addMessage('assistant', '', true);
+  const currentBubbleId = ++bubbleCounter;
+  const bubble = addMessage('assistant', '', true, null, currentBubbleId);
   let accumulated = '';
 
   try {
@@ -545,8 +555,9 @@ async function sendMessage() {
           if (data.done) {
             const badge = extractStatusBadge(accumulated);
             bubble.innerHTML = (badge || '') + renderMarkdown(accumulated);
+            bubble.dataset.bubbleId = currentBubbleId;
             addCopyBtn(bubble, accumulated);
-            fetchSuggestions(msg, accumulated, bubble);
+            fetchSuggestions(msg, accumulated, currentBubbleId);
           }
         }
       }

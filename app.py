@@ -1,11 +1,18 @@
 import os
 import json
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from flask import Flask, render_template, request, jsonify, Response, stream_with_context
-from groq import Groq
+import google.generativeai as genai
 from knowledge.afs_knowledge import SYSTEM_PROMPT
 
 app = Flask(__name__)
-client = Groq(api_key=os.environ.get("GROQ_API_KEY", ""))
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY", ""))
 
 CONVERSATION_HISTORY = {}
 
@@ -27,28 +34,24 @@ def chat():
     if session_id not in CONVERSATION_HISTORY:
         CONVERSATION_HISTORY[session_id] = []
 
-    CONVERSATION_HISTORY[session_id].append({"role": "user", "content": user_message})
+    CONVERSATION_HISTORY[session_id].append({"role": "user", "parts": [user_message]})
 
     def generate():
         full_response = ""
-        # Keep only last 2 turns to stay within TPM limits
-        history = CONVERSATION_HISTORY[session_id][-4:]
-        messages = [{"role": "system", "content": SYSTEM_PROMPT}] + history
-        stream = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
-            max_tokens=2048,
-            messages=messages,
-            stream=True,
+        history = CONVERSATION_HISTORY[session_id][:-1][-4:]  # last 2 turns excluding current
+        model = genai.GenerativeModel(
+            model_name="gemini-3.8-flash",
+            system_instruction=SYSTEM_PROMPT,
         )
+        chat_session = model.start_chat(history=history)
+        stream = chat_session.send_message(user_message, stream=True)
         for chunk in stream:
-            text = chunk.choices[0].delta.content or ""
+            text = chunk.text or ""
             if text:
                 full_response += text
                 yield f"data: {json.dumps({'text': text})}\n\n"
 
-        CONVERSATION_HISTORY[session_id].append(
-            {"role": "assistant", "content": full_response}
-        )
+        CONVERSATION_HISTORY[session_id].append({"role": "model", "parts": [full_response]})
         yield f"data: {json.dumps({'done': True})}\n\n"
 
     return Response(
@@ -81,14 +84,9 @@ def suggest():
     )
 
     try:
-        completion = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
-            max_tokens=200,
-            messages=[{"role": "user", "content": prompt}],
-            stream=False,
-        )
-        raw = completion.choices[0].message.content.strip()
-        # Extract JSON array robustly
+        model = genai.GenerativeModel("gemini-3.8-flash")
+        response = model.generate_content(prompt)
+        raw = response.text.strip()
         start = raw.find("[")
         end = raw.rfind("]") + 1
         suggestions = json.loads(raw[start:end]) if start != -1 else []
@@ -113,7 +111,6 @@ def rewind():
     session_id = data.get("session_id", "default")
     turn_index = data.get("turn_index", 0)
     if session_id in CONVERSATION_HISTORY:
-        # Each turn = 1 user msg + 1 assistant msg = 2 entries; keep entries before turn_index*2
         CONVERSATION_HISTORY[session_id] = CONVERSATION_HISTORY[session_id][:turn_index * 2]
     return jsonify({"ok": True})
 
