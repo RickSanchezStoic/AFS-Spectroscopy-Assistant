@@ -67,24 +67,35 @@ COMBINED METHODS (e.g. NIR+Raman, MIR ATR+Fluorescence)
 APPLICATION_EXAMPLES = """
 AFS Application Examples (Source: S01 p.13-18, S02, D01-D08 development scenarios)
 
-PHARMACEUTICAL / POWDER
+PHARMACEUTICAL / POWDER [S01 p.14-15]
 - API blend concentration monitoring at tablet press feed frame: NIR diffuse reflection is supported [S01 p.14-15]
-- Raman is a comparison candidate for same application [S01 p.14-15]
+- Raman is a comparison candidate: 785 nm excitation wavelength stated for pharma blend application [S01 p.15]
+- NIR detects hydrogen bonds and asymmetric polar groups; Raman detects molecular backbone and symmetrical non-polar groups — they are complementary [S01 p.15]
+- NIR+Raman combined: low-level data fusion (spectra merged into one matrix), then PLS regression; can predict API potency or coating thickness with higher accuracy than single method [S01 p.15]
+- Multispectral NIRaman combined probe fits inside tablet press feed frame [S01 p.15, Fig.6]
 - API in hot polymer extrusion: MIR ATR probe concept [S02 p.14]; interface may foul; offline assays available
 - Physical changes (particle size, density, flow) affect NIR signal [S01 p.14-15]
 - Calibration transfer: changing API or excipients can INVALIDATE existing calibration [S01 p.10]
 
-DAIRY
-- Opaque/concentrated milk: NIR diffuse reflection supported [S01 p.17]
-- Whey (clearer liquid, D03): NIR transmission/transflection probe concept [S01 p.17-18]; BUT turbidity may change under some operating conditions — probe geometry must handle this variation
+DAIRY [S01 p.17-18]
+- Opaque/concentrated products (yogurt, butter, whole milk concentrates): NIR Reflection (diffuse reflection probe, flush-mounted) [S01 p.17-18]
+- Clear/semi-transparent liquids (skim milk, whey, permeate): NIR Transmission preferred; path length 1-10 mm [S01 p.18]
+- Transflection probe: can work for both low-fat and high-fat products as a combined solution [S01 p.18]
+- Whey (clearer liquid, D03): NIR transmission/transflection probe concept; BUT turbidity may change — probe geometry must handle this variation [S01 p.17-18]
+- NIR Reflection sensitive to surface characteristics and fat globule size; scattering correction (MSC, SNV) needed before PLS regression [S01 p.17]
 - Fat and protein each need independent reference results
 - Temperature, texture, scattering changes can mimic composition changes [S01 p.17]
+- Advanced labs also use Fluorescence, Raman, and MIR ATR for higher molecular specificity in dairy [S01 p.18]
 
-BIOPROCESS / FERMENTATION
-- Glucose and lactate in aqueous cell culture (D04): NIR or Raman probe [S01 p.16]; medium and cell population change during the run — need stable calibration approach
-- Biomass/growth monitoring during yeast fermentation (D05): target variables (biomass signal vs metabolic signal) must be defined before selecting method; broth optical density increases during run [S01 p.16]
-- Viable biomass: fluorescence (NADH proxy) — requires defined fluorescent relationship [S01 p.16]
-- UV/Vis for biomass-related optical signal, but optical density is NOT a viable cell count [S01 p.16]
+BIOPROCESS / FERMENTATION [S01 p.16-17]
+- Glucose and lactate in aqueous cell culture (D04): NIR or Raman probe; Raman well-suited for aqueous environments (low water absorbance); medium and cell population change during the run
+- Raman detects: glucose, lactate, glutamine, acetate, TCD/VCD (Fig.7 spectral map) [S01 p.17]
+- Fluorescence detects: NAD(P)H, proteins, vitamins, ethanol/metabolic changes, cell mass — down to nM-uM range [S01 p.16-17]
+- NIR/MIR detects: glucose, lactate, ammonium, pH, biomass, fructose, acetic acid, ethanol [S01 p.17]
+- UV/Vis tracks cell suspension turbidity (correlates with cell density) as low-cost real-time biomass signal, but optical density is NOT a viable cell count [S01 p.16]
+- For high optical density (turbid/opaque) media: UV-ATR probe needed instead of transmission [S01 p.16]
+- Biomass/growth monitoring during yeast fermentation (D05): "biomass signal" and "metabolic signal" must be defined separately before selecting method; broth optical density increases during run
+- Viable biomass via fluorescence: requires defined fluorescent target (e.g. NADH) or validated proxy [S01 p.16]
 
 PETROLEUM / CHEMICAL
 - Water in petroleum (D06): MIR ATR [S01 p.6, S02 p.13]; fiber link for MIR requires MIR-compatible fiber (chalcogenide/silver halide), NOT silica [S02 p.6]; analyzer may be outside process area — fiber length and safety requirements matter
