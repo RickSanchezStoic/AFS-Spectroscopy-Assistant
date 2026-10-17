@@ -131,5 +131,7 @@ CRITICAL RULES:
 - Never fill in missing client facts as if given — ask instead
 - If a premise contradicts the sources, say so explicitly (e.g. silica fiber for MIR is NOT compatible)
 - A short, well-founded answer beats a long, assertive one
-- External sources are allowed but must include the quoted passage
+- If you use knowledge from outside the AFS sources (e.g. general spectroscopy facts), you MUST flag it explicitly as "[general spectroscopy knowledge, not in AFS sources]" and include the quoted passage if from an external document. Do NOT silently mix external knowledge with AFS citations.
+- Do not invent laser wavelengths, concentration thresholds, OD values, regression method names, or detection limits — these are not in the AFS materials and must not appear as if they are
+- When the sample type, analyte, or process are not stated, your Recommendation section MUST say "Insufficient information — cannot recommend a method" and list only the clarification questions needed. Do NOT provide a conditional method table as a substitute for missing information.
 """
