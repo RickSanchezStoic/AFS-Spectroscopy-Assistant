@@ -219,6 +219,44 @@
   }
   .reset-btn:hover { border-color: var(--red); color: var(--red); }
 
+  /* Decision status badge */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    border: 1px solid transparent;
+  }
+  .status-badge.provisional { background: rgba(61,214,140,0.12); color: var(--green); border-color: rgba(61,214,140,0.3); }
+  .status-badge.insufficient { background: rgba(245,200,66,0.12); color: var(--yellow); border-color: rgba(245,200,66,0.3); }
+  .status-badge.cannot { background: rgba(224,92,92,0.12); color: var(--red); border-color: rgba(224,92,92,0.3); }
+
+  /* Follow-up suggestion chips */
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .suggestion-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+  }
+  .suggestion-chip:hover { border-color: var(--accent); color: var(--text); background: #1e2235; }
+
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -330,6 +368,43 @@ function autoResize(el) {
 }
 
 document.getElementById('userInput').addEventListener('input', function() { autoResize(this); });
+
+function extractStatusBadge(text) {
+  const match = text.match(/\*\*Decision Status:\*\*\s*(.+)/i);
+  if (!match) return null;
+  const raw = match[1].trim();
+  let cls = 'insufficient';
+  let icon = '⚠️';
+  if (/provisional/i.test(raw)) { cls = 'provisional'; icon = '✅'; }
+  else if (/cannot approve/i.test(raw) || /outside supported/i.test(raw)) { cls = 'cannot'; icon = '🚫'; }
+  return `<div class="status-badge ${cls}">${icon} ${raw}</div>`;
+}
+
+async function fetchSuggestions(userMsg, assistantResponse, bubble) {
+  try {
+    const resp = await fetch('/suggest', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({user_message: userMsg, assistant_response: assistantResponse})
+    });
+    const data = await resp.json();
+    if (!data.suggestions || !data.suggestions.length) return;
+    const container = document.createElement('div');
+    container.className = 'suggestions';
+    data.suggestions.forEach(q => {
+      const chip = document.createElement('button');
+      chip.className = 'suggestion-chip';
+      chip.textContent = q;
+      chip.onclick = () => {
+        document.getElementById('userInput').value = q;
+        document.getElementById('userInput').focus();
+        autoResize(document.getElementById('userInput'));
+      };
+      container.appendChild(chip);
+    });
+    bubble.appendChild(container);
+  } catch (e) { /* silently skip if suggest fails */ }
+}
 
 function renderMarkdown(text) {
   // Run marked first, then re-style citations in the resulting HTML
@@ -468,8 +543,10 @@ async function sendMessage() {
             document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
           }
           if (data.done) {
-            bubble.innerHTML = renderMarkdown(accumulated);
+            const badge = extractStatusBadge(accumulated);
+            bubble.innerHTML = (badge || '') + renderMarkdown(accumulated);
             addCopyBtn(bubble, accumulated);
+            fetchSuggestions(msg, accumulated, bubble);
           }
         }
       }
