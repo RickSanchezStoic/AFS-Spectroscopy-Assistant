@@ -49,7 +49,7 @@ All supplied materials were read and compiled into `knowledge/afs_knowledge.py`:
 | `S03_LED_Kidney_Study_2017.pdf` | Proof-of-concept scope and limitations (in vitro, n=14) |
 | `S04_Combi_MIR_Fluorescence_2021.pdf` | Combined MIR ATR + fluorescence probe on model tissues |
 | `AFS_method_comparison_table.xlsx` | Method x technique x sensitivity x selectivity x cost table |
-| `AFS_Examples_and_Reference.docx` | Worked examples D01-D02, answer structure, good practice rules |
+| `AFS_Examples_and_Reference.docx` | All D01-D08 scenarios, worked examples D01-D02, method overview table, fiber families table, good practice rules |
 
 The knowledge base is injected as system context on every request. The model cites sources by ID and page for every technical claim.
 
