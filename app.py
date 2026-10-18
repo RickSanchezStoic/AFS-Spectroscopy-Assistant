@@ -20,7 +20,7 @@ PROVIDER = "claude"
 if PROVIDER == "claude":
     import anthropic
     _client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
-    MODEL = "claude-sonnet-4-6"
+    MODEL = "claude-haiku-4-5"
 
 elif PROVIDER == "sambanova":
     from openai import OpenAI
@@ -57,7 +57,7 @@ def _chat_stream(history, user_message):
             messages.append({"role": role, "content": turn["parts"][0]})
         messages.append({"role": "user", "content": user_message})
         with _client.messages.stream(
-            model=MODEL, system=SYSTEM_PROMPT, messages=messages, max_tokens=4096
+            model=MODEL, system=SYSTEM_PROMPT, messages=messages, max_tokens=2048
         ) as stream:
             for text in stream.text_stream:
                 yield text or ""
