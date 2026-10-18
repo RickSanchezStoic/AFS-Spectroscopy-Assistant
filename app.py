@@ -52,10 +52,42 @@ elif PROVIDER == "gemini":
 print(f"[AFS] Provider: {PROVIDER.title()} / {MODEL}")
 # ───────────────────────────────────────────────────────────────────────────
 
+# ── Context budget ───────────────────────────────────────────────────────────
+# Keep the most recent history that fits within this character budget.
+# ~4 chars ≈ 1 token. Budget of 16 000 chars ≈ 4 000 history tokens, which
+# combined with the ~6 000-token system prompt leaves ample headroom on every
+# supported provider (Claude 200 K, Groq 131 K, Gemini 1 M, SambaNova 128 K).
+# Raise if you want more multi-turn memory; lower to reduce Groq rate-limit risk.
+HISTORY_CHAR_BUDGET = 16_000
+
+# Per-provider output cap. Claude handles long answers well; Groq free tier has
+# a tight tokens-per-minute quota, so we cap it lower to avoid 429s mid-demo.
+MAX_TOKENS = {
+    "claude": 4096,
+    "groq": 2048,       # ← lower to stay under Groq free-tier TPM limit
+    "gemini": 4096,
+    "sambanova": 4096,
+}
+
+
+def _trim_history(full_history):
+    """Return the most-recent turns that fit within HISTORY_CHAR_BUDGET chars."""
+    budget = HISTORY_CHAR_BUDGET
+    kept = []
+    for turn in reversed(full_history):
+        text = turn["parts"][0]
+        if budget <= 0:
+            break
+        kept.append(turn)
+        budget -= len(text)
+    return list(reversed(kept))
+
+
 CONVERSATION_HISTORY = {}
 
 
 def _chat_stream(history, user_message):
+    out_tokens = MAX_TOKENS.get(PROVIDER, 4096)
     if PROVIDER == "claude":
         messages = []
         for turn in history:
@@ -63,7 +95,7 @@ def _chat_stream(history, user_message):
             messages.append({"role": role, "content": turn["parts"][0]})
         messages.append({"role": "user", "content": user_message})
         with _client.messages.stream(
-            model=MODEL, system=SYSTEM_PROMPT, messages=messages, max_tokens=4096
+            model=MODEL, system=SYSTEM_PROMPT, messages=messages, max_tokens=out_tokens
         ) as stream:
             for text in stream.text_stream:
                 yield text or ""
@@ -74,7 +106,7 @@ def _chat_stream(history, user_message):
             messages.append({"role": role, "content": turn["parts"][0]})
         messages.append({"role": "user", "content": user_message})
         stream = _client.chat.completions.create(
-            model=MODEL, messages=messages, stream=True, max_tokens=4096
+            model=MODEL, messages=messages, stream=True, max_tokens=out_tokens
         )
         for chunk in stream:
             yield chunk.choices[0].delta.content or ""
@@ -130,7 +162,7 @@ def chat():
 
     def generate():
         full_response = ""
-        history = CONVERSATION_HISTORY[session_id][:-1][-4:]
+        history = _trim_history(CONVERSATION_HISTORY[session_id][:-1])
         try:
             for text in _chat_stream(history, user_message):
                 if text:
