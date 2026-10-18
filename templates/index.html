@@ -34,7 +34,7 @@
   .logo { display: flex; align-items: center; gap: 12px; }
   .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
   .logo-text h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
-  .logo-text p { font-size: 11px; color: var(--text2); margin-top: 1px; }
+  .logo-text p { font-size: 12px; color: var(--text2); margin-top: 2px; letter-spacing: 0.3px; }
 
   .main { display: flex; flex: 1; overflow: hidden; }
 
@@ -63,6 +63,7 @@
     line-height: 1.4;
   }
   .scenario-btn:hover { border-color: var(--accent); background: #1e2235; }
+  .scenario-btn.active { border-color: var(--accent); background: rgba(79,142,247,0.12); }
   .scenario-id { font-weight: 700; color: var(--accent); display: block; font-size: 11px; margin-bottom: 3px; }
 
   .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -234,6 +235,28 @@
   .status-badge.provisional { background: rgba(61,214,140,0.12); color: var(--green); border-color: rgba(61,214,140,0.3); }
   .status-badge.insufficient { background: rgba(245,200,66,0.12); color: var(--yellow); border-color: rgba(245,200,66,0.3); }
   .status-badge.cannot { background: rgba(224,92,92,0.12); color: var(--red); border-color: rgba(224,92,92,0.3); }
+  .status-badge.outside { background: rgba(139,146,184,0.12); color: var(--text2); border-color: rgba(139,146,184,0.3); }
+
+  /* Badge legend in sidebar */
+  .badge-legend { display: flex; flex-direction: column; gap: 5px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text2); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-dot.green { background: var(--green); }
+  .legend-dot.yellow { background: var(--yellow); }
+  .legend-dot.red { background: var(--red); }
+  .legend-dot.grey { background: var(--text2); }
+
+  /* Sources Used card */
+  .sources-card {
+    background: rgba(79,142,247,0.06);
+    border: 1px solid rgba(79,142,247,0.2);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 16px;
+  }
+  .sources-card h2 { color: var(--accent) !important; font-size: 13px !important; border-bottom: none !important; margin-top: 0 !important; }
+  .sources-card li::before { content: "📄 "; }
 
   /* Follow-up suggestion chips */
   .suggestions {
@@ -304,6 +327,16 @@
       LED kidney study → live surgical use?
     </button>
     <hr style="border-color: var(--border); margin: 4px 0;">
+    <div>
+      <h3 style="margin-bottom: 8px;">Decision Status</h3>
+      <div class="badge-legend">
+        <div class="legend-item"><div class="legend-dot green"></div>Provisional assessment</div>
+        <div class="legend-item"><div class="legend-dot yellow"></div>Insufficient information</div>
+        <div class="legend-item"><div class="legend-dot red"></div>Cannot approve</div>
+        <div class="legend-item"><div class="legend-dot grey"></div>Outside supported scope</div>
+      </div>
+    </div>
+    <hr style="border-color: var(--border); margin: 4px 0;">
     <button class="reset-btn" onclick="resetChat()">🗑 New conversation</button>
   </div>
 
@@ -351,6 +384,8 @@ const SCENARIOS = {
 };
 
 function loadScenario(id) {
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
   document.getElementById('userInput').value = SCENARIOS[id];
   document.getElementById('userInput').focus();
 }
@@ -413,9 +448,8 @@ async function fetchSuggestions(userMsg, assistantResponse, bubbleId) {
 }
 
 function renderMarkdown(text) {
-  // Run marked first, then re-style citations in the resulting HTML
   let html = marked.parse(text);
-  // Match both [S01 p.x] and 【S01 p.x】 bracket styles
+  // Style AFS citations
   html = html.replace(/[\[【]([^\]】]{3,60})[\]】]/g, (m, inner) => {
     const clean = inner.replace(/[​‌‍﻿]/g, '').replace(/[‐-―]/g, '-').trim();
     if (/^S0\d/.test(clean) || /^Table/.test(clean) || /^D0\d/.test(clean)) {
@@ -423,6 +457,9 @@ function renderMarkdown(text) {
     }
     return m;
   });
+  // Wrap "Sources Used" section in a styled card
+  html = html.replace(/(<h[23][^>]*>[^<]*Sources Used[^<]*<\/h[23]>)([\s\S]*)$/i,
+    '<div class="sources-card">$1$2</div>');
   return html;
 }
 
