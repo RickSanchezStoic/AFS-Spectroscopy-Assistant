@@ -29,6 +29,8 @@ elif PROVIDER == "groq":
     from groq import Groq
     _client = Groq(api_key=os.environ.get("GROQ_API_KEY", ""))
     MODEL = "openai/gpt-oss-120b"
+    _suggest_client = Groq(api_key=os.environ.get("GROQ_API_KEY", ""))
+    SUGGEST_MODEL = "llama-3.1-8b-instant"
 
 elif PROVIDER == "gemini":
     import google.generativeai as genai
@@ -62,7 +64,14 @@ def _chat_stream(history, user_message):
 
 
 def _suggest_once(prompt):
-    if PROVIDER in ("sambanova", "groq"):
+    if PROVIDER == "groq":
+        resp = _suggest_client.chat.completions.create(
+            model=SUGGEST_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=256,
+        )
+        return resp.choices[0].message.content.strip()
+    elif PROVIDER == "sambanova":
         resp = _client.chat.completions.create(
             model=MODEL,
             messages=[{"role": "user", "content": prompt}],
