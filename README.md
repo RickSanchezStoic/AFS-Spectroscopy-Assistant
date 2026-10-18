@@ -57,16 +57,31 @@ The knowledge base is injected as system context on every request. The model cit
 
 ## Setup
 
-**Requirements:** Python 3.9+, a [Groq API key](https://console.groq.com) (free tier)
+**Requirements:** Python 3.9+
 
 ```bash
 pip install -r requirements.txt
 ```
 
 **Set your API key** — create a `.env` file in the project root (already in `.gitignore`):
+
 ```
-GROQ_API_KEY=your_key_here
+# Pick whichever provider you have a key for:
+ANTHROPIC_API_KEY=your_key_here   # recommended — best response quality
+GROQ_API_KEY=your_key_here        # free tier fallback (console.groq.com)
+GEMINI_API_KEY=your_key_here
+SAMBANOVA_API_KEY=your_key_here
 ```
+
+**Switch providers** — open `app.py` and change **one line**:
+```python
+PROVIDER = "claude"    # ← recommended for demo (claude-haiku-4-5)
+PROVIDER = "groq"      # ← free-tier fallback (default)
+PROVIDER = "gemini"
+PROVIDER = "sambanova"
+```
+
+> **For the live demo: use `PROVIDER = "claude"`.** Response quality and source citation accuracy are noticeably better than free-tier alternatives. Get a free API key at [console.anthropic.com](https://console.anthropic.com).
 
 **Run the app:**
 ```bash

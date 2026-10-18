@@ -13,9 +13,15 @@ from knowledge.afs_knowledge import SYSTEM_PROMPT
 app = Flask(__name__)
 
 # ── Provider selection ──────────────────────────────────────────────────────
-# Change this one line to switch providers.
+# Change this ONE line to switch providers.
 # Options: "claude" | "groq" | "gemini" | "sambanova"
-PROVIDER = "claude"
+#
+# RECOMMENDED FOR DEMO: "claude" (claude-haiku-4-5)
+#   → Best response quality; requires ANTHROPIC_API_KEY in .env
+#
+# DEFAULT / FALLBACK: "groq" (free tier, fast)
+#   → Requires GROQ_API_KEY in .env; free at console.groq.com
+PROVIDER = "groq"
 
 if PROVIDER == "claude":
     import anthropic
