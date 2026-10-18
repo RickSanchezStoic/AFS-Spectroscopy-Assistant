@@ -405,7 +405,7 @@ function autoResize(el) {
 document.getElementById('userInput').addEventListener('input', function() { autoResize(this); });
 
 function extractStatusBadge(text) {
-  const match = text.match(/\*\*Decision Status:\*\*\s*(.+)/i);
+  const match = text.match(/\*{0,2}Decision Status:?\*{0,2}\s*(.+)/i);
   if (!match) return null;
   const raw = match[1].trim().replace(/\*\*/g, '');
   const label = raw.split(/\s*[—–-]\s*/)[0].trim().replace(/\.$/, '');
