@@ -336,7 +336,7 @@
 <script>
 const SESSION_ID = 'session_' + Date.now();
 let isStreaming = false;
-let messageIndex = 0; // tracks turn index for rewind
+let messageIndex = 0;
 
 // Configure marked
 marked.setOptions({ breaks: true, gfm: true });
@@ -372,8 +372,7 @@ document.getElementById('userInput').addEventListener('input', function() { auto
 function extractStatusBadge(text) {
   const match = text.match(/\*\*Decision Status:\*\*\s*(.+)/i);
   if (!match) return null;
-  const raw = match[1].trim();
-  // Truncate at em-dash or long qualifier sentences — keep just the label
+  const raw = match[1].trim().replace(/\*\*/g, '');
   const label = raw.split(/\s*[—–-]\s*/)[0].trim().replace(/\.$/, '');
   let cls = 'insufficient';
   let icon = '⚠️';

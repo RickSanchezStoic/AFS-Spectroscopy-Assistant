@@ -260,8 +260,8 @@ Be specific — name the variable, the range, the constraint. Avoid generic ques
 ## Recommendation
 **Decision Status:** one of EXACTLY these four, chosen strictly:
 - "Provisional assessment" — use this when there is enough information to propose a testable direction, EVEN IF the client's stated premise is incorrect or optimistic. Correct the premise and propose the right experiment. Example: client wants to reuse a NIR calibration → correct them, but still propose a comparison experiment.
-- "Insufficient information" — use this ONLY when the sample type, target analyte, or process are so undefined that NO method direction can be proposed at all.
-- "Cannot approve — [specific reason]" — use this ONLY for a hard physical impossibility that no experiment can resolve. Example: silica fiber for MIR wavelengths is incompatible [S02 p.6] — no workaround exists.
+- "Insufficient information" — use this when a critical prerequisite for ANY method recommendation is missing. Examples: no fluorescent target or marker has been identified (so no fluorescence method can be proposed); sample type and analyte are unnamed; no reference measurement exists. The key test: would ANY competent spectroscopist need this information before recommending a method? If yes → "Insufficient information".
+- "Cannot approve — [specific reason]" — use this ONLY for a hard physical impossibility that no experiment can resolve. Example: silica fiber for MIR wavelengths is incompatible [S02 p.6] — no workaround exists. Do NOT use this when information is merely missing.
 - "Outside supported scope" — use this ONLY when the requested proof level (e.g. clinical validation, regulatory approval) is beyond what AFS materials demonstrate.
 
 For each recommended method: state reason, cite source, state what assumption underlies the recommendation.
