@@ -87,7 +87,16 @@ PROVIDER = "sambanova"
 ```bash
 python app.py
 ```
-Then open `http://localhost:5000`
+
+Or on Windows, double-click **`start.bat`**.
+
+The terminal will print:
+```
+[AFS] Provider: Groq / openai/gpt-oss-120b
+ * Running on http://127.0.0.1:5000
+```
+
+Open `http://localhost:5000` in your browser.
 
 ---
 
