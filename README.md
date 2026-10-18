@@ -57,46 +57,41 @@ The knowledge base is injected as system context on every request. The model cit
 
 ## Setup
 
-**Requirements:** Python 3.9+
+**Requirements:** Python 3.9+ · [Anthropic API key](https://console.anthropic.com) (free tier available)
 
+**1. Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-**Set your API key** — create a `.env` file in the project root (already in `.gitignore`):
-
+**2. Create a `.env` file** in the project root with your Anthropic key:
 ```
-# Pick whichever provider you have a key for:
-ANTHROPIC_API_KEY=your_key_here   # recommended — best response quality
-GROQ_API_KEY=your_key_here        # free tier fallback (console.groq.com)
-GEMINI_API_KEY=your_key_here
-SAMBANOVA_API_KEY=your_key_here
+ANTHROPIC_API_KEY=your_key_here
 ```
 
-**Switch providers** — open `app.py` and change **one line**:
-```python
-PROVIDER = "claude"    # ← recommended for demo (claude-haiku-4-5)
-PROVIDER = "groq"      # ← free-tier fallback (default)
-PROVIDER = "gemini"
-PROVIDER = "sambanova"
-```
-
-> **For the live demo: use `PROVIDER = "claude"`.** Response quality and source citation accuracy are noticeably better than free-tier alternatives. Get a free API key at [console.anthropic.com](https://console.anthropic.com).
-
-**Run the app:**
+**3. Run the app**
 ```bash
 python app.py
 ```
-
 Or on Windows, double-click **`start.bat`**.
 
-The terminal will print:
+You should see:
 ```
 [AFS] Provider: Claude / claude-haiku-4-5
  * Running on http://127.0.0.1:5000
 ```
 
 Open `http://localhost:5000` in your browser.
+
+> **The app runs on Claude by default.** No config changes needed — just the API key above.
+
+### Other providers (optional)
+If you don't have an Anthropic key, you can switch to a free alternative by changing one line in `app.py`:
+```python
+PROVIDER = "groq"       # free at console.groq.com — add GROQ_API_KEY to .env
+PROVIDER = "gemini"     # add GEMINI_API_KEY to .env
+PROVIDER = "sambanova"  # add SAMBANOVA_API_KEY to .env
+```
 
 ---
 
