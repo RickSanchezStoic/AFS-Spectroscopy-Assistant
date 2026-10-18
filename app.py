@@ -21,7 +21,7 @@ app = Flask(__name__)
 #
 # DEFAULT / FALLBACK: "groq" (free tier, fast)
 #   → Requires GROQ_API_KEY in .env; free at console.groq.com
-PROVIDER = "groq"
+PROVIDER = "claude"
 
 if PROVIDER == "claude":
     import anthropic

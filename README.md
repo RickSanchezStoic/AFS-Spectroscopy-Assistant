@@ -92,7 +92,7 @@ Or on Windows, double-click **`start.bat`**.
 
 The terminal will print:
 ```
-[AFS] Provider: Groq / openai/gpt-oss-120b
+[AFS] Provider: Claude / claude-haiku-4-5
  * Running on http://127.0.0.1:5000
 ```
 
