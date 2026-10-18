@@ -20,7 +20,7 @@ PROVIDER = "claude"
 if PROVIDER == "claude":
     import anthropic
     _client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
-    MODEL = "claude-sonnet-4-5"
+    MODEL = "claude-sonnet-4-6"
 
 elif PROVIDER == "sambanova":
     from openai import OpenAI
