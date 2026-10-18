@@ -14,10 +14,15 @@ app = Flask(__name__)
 
 # ── Provider selection ──────────────────────────────────────────────────────
 # Change this one line to switch providers.
-# Options: "sambanova" | "gemini" | "groq"
-PROVIDER = "groq"
+# Options: "claude" | "groq" | "gemini" | "sambanova"
+PROVIDER = "claude"
 
-if PROVIDER == "sambanova":
+if PROVIDER == "claude":
+    import anthropic
+    _client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+    MODEL = "claude-sonnet-4-5"
+
+elif PROVIDER == "sambanova":
     from openai import OpenAI
     _client = OpenAI(
         base_url="https://api.sambanova.ai/v1",
@@ -45,7 +50,18 @@ CONVERSATION_HISTORY = {}
 
 
 def _chat_stream(history, user_message):
-    if PROVIDER in ("sambanova", "groq"):
+    if PROVIDER == "claude":
+        messages = []
+        for turn in history:
+            role = "assistant" if turn["role"] == "model" else turn["role"]
+            messages.append({"role": role, "content": turn["parts"][0]})
+        messages.append({"role": "user", "content": user_message})
+        with _client.messages.stream(
+            model=MODEL, system=SYSTEM_PROMPT, messages=messages, max_tokens=4096
+        ) as stream:
+            for text in stream.text_stream:
+                yield text or ""
+    elif PROVIDER in ("sambanova", "groq"):
         messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         for turn in history:
             role = "assistant" if turn["role"] == "model" else turn["role"]
@@ -64,7 +80,14 @@ def _chat_stream(history, user_message):
 
 
 def _suggest_once(prompt):
-    if PROVIDER == "groq":
+    if PROVIDER == "claude":
+        resp = _client.messages.create(
+            model=MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=256,
+        )
+        return resp.content[0].text.strip()
+    elif PROVIDER == "groq":
         resp = _suggest_client.chat.completions.create(
             model=SUGGEST_MODEL,
             messages=[{"role": "user", "content": prompt}],
