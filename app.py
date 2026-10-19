@@ -63,7 +63,7 @@ HISTORY_CHAR_BUDGET = 16_000
 # Per-provider output cap. Claude handles long answers well; Groq free tier has
 # a tight tokens-per-minute quota, so we cap it lower to avoid 429s mid-demo.
 MAX_TOKENS = {
-    "claude": 4096,
+    "claude": 8192,     # haiku-4-5 supports up to 8192 output tokens
     "groq": 2048,       # ← lower to stay under Groq free-tier TPM limit
     "gemini": 4096,
     "sambanova": 4096,
